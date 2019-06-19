@@ -16,6 +16,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LogIn extends AppCompatActivity {
 
@@ -24,6 +29,7 @@ public class LogIn extends AppCompatActivity {
 
     FirebaseAuth firebaseAuth;
     ProgressDialog progressDialog;
+    DatabaseReference databaseReference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +39,7 @@ public class LogIn extends AppCompatActivity {
         login_btn=findViewById(R.id.login_btn);
 
         progressDialog=new ProgressDialog(this);
-        progressDialog.setMessage("Loggin...");
+        progressDialog.setMessage("Loading...");
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,8 +50,8 @@ public class LogIn extends AppCompatActivity {
     }
 
     private void login() {
-        String emailtext=email.getText().toString().trim();
-        String passtext=pass.getText().toString().trim();
+        final String emailtext=email.getText().toString().trim();
+        final String passtext=pass.getText().toString().trim();
         firebaseAuth=FirebaseAuth.getInstance();
 
         if (TextUtils.isEmpty(emailtext)){
@@ -54,19 +60,40 @@ public class LogIn extends AppCompatActivity {
         if (TextUtils.isEmpty(passtext)){
             Toast.makeText(this,"Password field is empty",Toast.LENGTH_SHORT).show();
         }
-
-        firebaseAuth.signInWithEmailAndPassword(emailtext,passtext).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        databaseReference= FirebaseDatabase.getInstance().getReference().child(emailtext+"/emailAddress");
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
-                    Toast.makeText(getApplicationContext(),"Login Sucessful",Toast.LENGTH_SHORT).show();
-                    progressDialog.dismiss();
-                }
-                else{
-                    Toast.makeText(getApplicationContext(),task.getException().getMessage(),Toast.LENGTH_SHORT).show();
-                    progressDialog.dismiss();
-                }
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String email=dataSnapshot.getValue().toString().trim();
+                firebaseAuth.signInWithEmailAndPassword(email,passtext).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()){
+                            if (firebaseAuth.getCurrentUser().isEmailVerified()){
+                                startActivity(new Intent(LogIn.this,Profile.class));
+                                progressDialog.dismiss();
+                                finish();
+                            }
+                            else {
+                                Toast.makeText(LogIn.this, "PLease Verify Your Email", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                            }
+                        }
+                        else{
+                            Toast.makeText(getApplicationContext(),task.getException().getMessage(),Toast.LENGTH_SHORT).show();
+                            progressDialog.dismiss();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
+
+
+
     }
 }

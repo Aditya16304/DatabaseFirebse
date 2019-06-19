@@ -7,6 +7,9 @@
     android:layout_height="match_parent"
     tools:context=".LogIn">
 
+    <include
+        layout="@layout/appbar"
+        android:id="@+id/appBar"/>
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -26,7 +29,8 @@
             android:id="@+id/emailLogIn"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="Email"/>
+            android:hint="Roll No"
+            android:inputType="text"/>
         <EditText
             android:id="@+id/passLogIn"
             android:layout_width="match_parent"

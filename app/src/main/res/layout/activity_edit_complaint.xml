@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditComplaint"
+    android:orientation="vertical">
+    <include
+        layout="@layout/appbar"
+        android:id="@+id/appBar"/>
+
+    <EditText
+        android:id="@+id/roomDetails"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:hint="Enter Room Details."
+        android:textColor="#000"
+        android:textSize="25dp" />
+    <EditText
+        android:id="@+id/complaintDetails"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:hint="Enter Complaint Details."
+        android:textColor="#000"
+        android:textSize="25dp" />
+    <Button
+        android:id="@+id/submitComplaintBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit Complaint"
+        android:layout_marginTop="20dp"/>
+
+</LinearLayout>
